@@ -1,15 +1,23 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.agpVersion = "8.1.1"
-}
-plugins {
-    id 'com.android.application' version "$agpVersion" apply false
-    id 'com.android.library' version "$agpVersion" apply false
-    id 'com.github.spotbugs' version '4.8.0' apply false
-    id 'checkstyle'
+    ext {
+        agpVersion = '8.7.0' // Android Gradle Plugin Version
+    }
 }
 
-project.ext {
-    // AndroidX
+plugins {
+    // Suppress Gradle Plugin version warnings
+    //noinspection GradlePluginVersion
+    id 'com.android.application' version "$agpVersion" apply false
+    //noinspection GradlePluginVersion
+    id 'com.android.library' version "$agpVersion" apply false
+    id 'com.github.spotbugs' version '4.8.0' apply false // Static code analysis for Java
+    id 'checkstyle' // Code style checker
+}
+
+// Define common versions and dependencies in ext block
+ext {
+    // AndroidX versions
     annotationVersion = "1.4.0"
     appcompatVersion = "1.5.1"
     coreVersion = "1.9.0"
@@ -23,7 +31,7 @@ project.ext {
     workManagerVersion = "2.7.1"
     googleMaterialVersion = "1.12.0"
 
-    // Third-party
+    // Third-party library versions
     commonslangVersion = "3.6"
     commonsioVersion = "2.5"
     jsoupVersion = "1.15.1"
@@ -33,7 +41,7 @@ project.ext {
     rxAndroidVersion = "2.1.1"
     rxJavaVersion = "2.2.2"
 
-    //Tests
+    // Test dependencies
     awaitilityVersion = "3.1.6"
     junitVersion = "4.13"
     robolectricVersion = "4.11"
@@ -45,16 +53,18 @@ project.ext {
 }
 
 checkstyle {
-    toolVersion '10.3.1'
+    toolVersion = '10.3.1' // Checkstyle tool version for Java code linting
 }
 
+// Task for applying Checkstyle with custom heap size and excludes for certain directories
 tasks.register('checkstyle', Checkstyle) {
     minHeapSize = "200m"
     maxHeapSize = "2g"
-    classpath = files()
-    source "${project.rootDir}"
-    exclude("**/generated-sources/**")
-    exclude("**/gen/**")
-    exclude("**/build/**")
-    exclude("**/generated/**")
+    classpath = files() // Empty classpath for Checkstyle as it just checks source code
+    source = fileTree("${project.rootDir}") {
+        exclude "**/generated-sources/**"
+        exclude "**/gen/**"
+        exclude "**/build/**"
+        exclude "**/generated/**"
+    }
 }
